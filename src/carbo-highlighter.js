@@ -107,15 +107,6 @@
             // Save the element to the active element
             this.element = element;
 
-            // Get element tag name
-            var elementLabelName = element.tagName;
-
-            // // Get label div of inpector.html
-            // var elementLabelContainer = this.$.elementlabel;
-
-            // // Set value of label div
-            // elementLabelContainer.innerHTML = elementLabelName;
-
             // The wrapper DOMNode
             var wrapper = this.$.wrapper;
             // The bounding rectangle for the element to be hightlighted
