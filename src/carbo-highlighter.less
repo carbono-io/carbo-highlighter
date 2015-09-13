@@ -3,7 +3,7 @@
     opacity: 0;
     position: fixed;
     z-index: 1000;
-    // pointer-events: none;
+    pointer-events: none;
 
     transition: 
         top ease 0.1s,
@@ -39,6 +39,10 @@
         position: absolute;
     }
 
+    .container ::content {
+        pointer-events: auto;
+    }
+
     .x-axis {        
         left: 0;
         right: 0;
@@ -71,12 +75,7 @@
 }
 
 #surface {
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    border: 3px red solid;
     box-sizing: border-box;
 
-    background-color: green;
+    background: transparent;
 }

@@ -88,20 +88,20 @@
 
             var highlighter = window.highlighter = document.getElementById('highlighter');
 
-            highlighter.highlight(middle);
+            highlighter.activate(middle);
 
             middle.addEventListener('click', function (e) {
 
                 e.stopPropagation();
 
-                highlighter.highlight(middle);
+                highlighter.activate(middle);
             });
 
             other.addEventListener('click', function (e) {
 
                 e.stopPropagation();
 
-                highlighter.highlight(other);
+                highlighter.activate(other);
             });
 
             document.body.addEventListener('click', function (e) {
