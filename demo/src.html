@@ -1,0 +1,114 @@
+<html>
+<head>
+    <title></title>
+
+    <script>
+        window.Polymer = window.Polymer || {};
+        window.Polymer.dom = 'shadow';
+    </script>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../src/carbo-highlighter.html">
+
+    <style type="text/css">
+        #middle {
+            position: fixed;
+
+            top: 50%;
+            left: 50%;
+
+            width: 150px;
+            height: 150px;
+
+            background-color: lightblue;
+
+            overflow: hidden;
+
+            color: navy;
+
+            font-family: helvetica, sans-serif;
+
+            border-radius: 50%;
+        }
+
+        #other {
+            position: fixed;
+
+            top: 20%;
+            left: 30%;
+
+            width: 200px;
+            height: 30px;
+            padding: 10px 10px;
+
+            background-color: darkred;
+
+            overflow: hidden;
+
+            color: white;
+
+            font-family: helvetica, sans-serif;
+
+        }
+    </style>
+</head>
+<body>
+    <div id="middle">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam iaculis justo quis ligula cursus, volutpat elementum nulla ullamcorper. Nulla venenatis volutpat feugiat. Cras non elit tempus, ultricies enim eget, volutpat eros. Morbi euismod dapibus quam, vel laoreet risus feugiat id. Vivamus gravida diam et orci tristique, et maximus lorem varius. Sed eleifend ligula id nunc hendrerit porttitor. Maecenas sed est ipsum. Vestibulum vestibulum accumsan imperdiet. Cras malesuada tristique eros, ut pretium neque lacinia et.
+    </div>
+    <div id="other">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam iaculis justo quis ligula cursus, volutpat elementum nulla ullamcorper. Nulla venenatis volutpat feugiat. Cras non elit tempus, ultricies enim eget, volutpat eros. Morbi euismod dapibus quam, vel laoreet risus feugiat id. Vivamus gravida diam et orci tristique, et maximus lorem varius. Sed eleifend ligula id nunc hendrerit porttitor. Maecenas sed est ipsum. Vestibulum vestibulum accumsan imperdiet. Cras malesuada tristique eros, ut pretium neque lacinia et.
+    </div>
+
+    <carbo-highlighter id="highlighter">
+
+        <div position="top">
+            top contents
+        </div>
+        <div position="bottom">
+            bottom contents
+        </div>
+        <div position="left">
+            left contents
+        </div>
+        <div position="right">
+            right contents
+        </div>
+
+    </carbo-highlighter>
+
+    <script type="text/javascript">
+
+
+
+        var middle = document.getElementById('middle');
+        var other  = document.getElementById('other');
+
+        window.addEventListener('WebComponentsReady', function () {
+            console.log('WebComponentsReady');
+
+            var highlighter = window.highlighter = document.getElementById('highlighter');
+
+            highlighter.highlight(middle);
+
+            middle.addEventListener('click', function (e) {
+
+                e.stopPropagation();
+
+                highlighter.highlight(middle);
+            });
+
+            other.addEventListener('click', function (e) {
+
+                e.stopPropagation();
+
+                highlighter.highlight(other);
+            });
+
+            document.body.addEventListener('click', function (e) {
+                highlighter.unHighlight();
+            })
+        });
+
+    </script>
+</body>
+</html>

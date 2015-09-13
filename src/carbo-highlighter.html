@@ -1,0 +1,30 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="carbo-highlighter-styles.html">
+
+<dom-module id="carbo-highlighter">
+    <style include="carbo-highlighter-styles"></style>
+
+    <template>
+
+        <div id="wrapper">
+            <div id="top" class="container x-axis">
+                <content select="[position='top']"></content>
+            </div>
+            <div id="bottom" class="container x-axis">
+                <content select="[position='bottom']"></content>
+            </div>
+            <div id="left" class="container y-axis">
+                <content select="[position='left']"></content>
+            </div>
+            <div id="right" class="container y-axis">
+                <content select="[position='right']"></content>
+            </div>
+            <div id="surface" class="container">
+                <content select="[position='center']"></content>
+            </div>
+        </div>
+
+    </template>
+
+    <script src="carbo-highlighter.js"></script>
+</dom-module>

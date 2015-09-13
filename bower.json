@@ -1,0 +1,16 @@
+{
+  "name": "carbo-highlighter",
+  "version": "0.0.0",
+  "authors": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "carbo-highlighter",
+    "carbo-highlighters"
+  ],
+  "dependencies": {
+    "polymer": "~1.1.3"
+  }
+}
