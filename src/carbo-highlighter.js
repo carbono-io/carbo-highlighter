@@ -1,5 +1,40 @@
 (function () {
 
+    function nodeListToArray(nodeList) {
+
+        if (nodeList instanceof Node) {
+            // If is a single node, simply return array
+            // containing the single node
+            return [nodeList];
+
+        } else if (nodeList instanceof NodeList) {
+            // If is a NodeList, convert using Array.prototype.slice technique
+            // See:
+            // https://developer.mozilla.org/en/docs/Web/API/NodeList
+            // 'Converting a NodeList to an Array'
+            return Array.prototype.slice.call(nodeList);
+
+        } else if (Array.isArray(nodeList)) {
+            // If is array, simply return it
+            return nodeList;
+
+        } else {
+            // Otherwise, throw error
+            throw new Error('Could not convert nodeList into Array');
+        }
+    }
+
+
+    function JSONtoCSS(styles) {
+
+        var str = '';
+
+        for (prop in styles) {
+            str += prop + ':' + styles[prop] + ';';
+        }
+
+        return str;
+    }
 
     /**
      * Style properties to be mimiced by the highlighter element
@@ -71,10 +106,10 @@
         is: 'carbo-highlighter',
 
         properties: {
-            element: {
+            target: {
                 type: Object,
                 notify: true,
-                observer: '_onElementChange',
+                observer: '_onTargetChange',
             },
 
             surfaceStyles: {
@@ -86,53 +121,27 @@
 
         ready: function () {
 
-            if (this.element) {
-                this.activate(this.element, true);
-            }
+            // Array of highlighters
+            this._highlighters = [];
+
+            this.target = [];
         },
 
         /**
-         * Highlights a given element
-         * @param  {DOMNode} element The node to be highlighted
+         * Highlights a given nodeList
+         * @param  {DOMNode} nodeList The node to be highlighted
          */
-        activate: function (element, force) {
-            if (!element) {
-                throw new Error('No element for activate(element)');
-            }
+        setTarget: function (nodeList, force) {
+            // Convert nodeList to array
+            nodeList = nodeListToArray(nodeList);
 
-            // If the new highlighted element is the same as the 
-            // currentActive one, just let it be.
-            if (this.element === element && !force) {
-                return; 
-            }
-
-            // If there is an element deactivate it
-            if (this.element) {
-                this.deactivate();
-            }
-
-            // Save the element to the active element
-            this.element = element;
-
-            // The wrapper DOMNode
-            var wrapper = this.$.wrapper;
-            // The bounding rectangle for the element to be hightlighted
-            var rect    = element.getBoundingClientRect();
-            
-            this.toggleClass('show', true, wrapper);
-
-            // Set positions
-            wrapper.style.left   = rect.left   + 'px';
-            wrapper.style.top    = rect.top    + 'px';
-            wrapper.style.width  = rect.width  + 'px';
-            wrapper.style.height = rect.height + 'px';
-
-            this._setSurfaceStyles();
+            this.set('target', nodeList)
         },
+
         /**
          * Removes highlight.
          */
-        deactivate: function () {
+        hide: function () {
 
             var wrapper = this.$.wrapper;
 
@@ -143,9 +152,104 @@
                 delete wrapper.style[styleProp];
             });
 
-            delete this.element;
+            delete this.target;
         },
 
+        _createHighlighter: function (targetNode, options) {
+
+
+
+            var highlighter = this._getHighlighter(targetNode) || {};
+
+            // Set target node
+            highlighter.targetNode = targetNode;
+            highlighter.state = 'active';
+
+            // The bounding rectangle for the targetNode to be hightlighted
+            var rect = targetNode.getBoundingClientRect();
+
+            var wrapperStyle = {
+                left  : rect.left   + 'px',
+                top   : rect.top    + 'px',
+                width : rect.width  + 'px',
+                height: rect.height + 'px',
+            };
+
+            highlighter.wrapperStyle = JSONtoCSS(wrapperStyle);
+
+            this.push('_highlighters', highlighter);
+
+            return highlighter;
+        },
+
+        _getHighlighter: function (targetNode) {
+            return _.find(this._highlighters, function (hlt, index) {
+                return hlt.targetNode === targetNode;
+            });
+        },
+
+        _destroyHighlighter: function (targetNode) {
+
+            var index = _.indexOf(this._highlighters, function (hlt) {
+                return hlt.targetNode = targetNode;
+            });
+
+            this.splice('_highlighters', index, 1);
+        },
+
+        /**
+         * Handles changes on the element
+         */
+        _onTargetChange: function (target, _target) {
+
+            var toRemove = [];
+
+            if (_target) {
+
+                // Loop old targets to check which ones should be removed
+                _target.forEach(function (node) {
+
+                    var shouldRemain = target.indexOf(node) !== -1;
+
+                    if (!shouldRemain) {
+                        toRemove.push(node);
+                    }
+                });
+            }
+
+            // Loop nodes to remove their highlighters
+            toRemove.forEach(function (node) {
+
+                this._destroyHighlighter(node);
+
+            }.bind(this));
+
+            // Loop target and create a new highlighter for each node
+            target.forEach(function (targetNode) {
+
+                // Create highlighter only if no highlighter 
+                // has been created for it
+
+                this._createHighlighter(targetNode);
+
+            }.bind(this));
+
+            // this._setSurfaceStyles();
+
+        },
+
+        /**
+         * Handle changes on the border
+         */
+        _onSurfaceStylesChange: function () {
+            var surface = this.$.surface;
+
+            console.log('_onSurfaceStylesChange');
+
+            for (prop in this.surfaceStyles) {
+                surface.style[prop] = this.surfaceStyles[prop];
+            }
+        },
 
         /**
          * Surface styles
@@ -155,7 +259,7 @@
             // on the positioning, such as border radius.
             // We want to mimic those styles from 
             // the highlighted element to the wrapper
-            var computedStyle = DOMHelpers.getComputedStyle(this.element);
+            var computedStyle = DOMHelpers.getComputedStyle(this.target);
 
             // get the surface element
             var surface = this.$.surface;
@@ -170,29 +274,6 @@
 
             // Set border styles
         },
-
-
-        /**
-         * Handles changes on the element
-         */
-        _onElementChange: function (newElement, oldElement) {
-            this.activate(newElement, true);
-        },
-
-        /**
-         * Handle changes on the border
-         */
-        _onSurfaceStylesChange: function () {
-            var surface = this.$.surface;
-
-            console.log('_onSurfaceStylesChange');
-
-            for (prop in this.surfaceStyles) {
-                surface.style[prop] = this.surfaceStyles[prop];
-            }
-
-            
-        }
 
     });
 

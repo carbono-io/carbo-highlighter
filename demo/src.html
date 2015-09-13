@@ -52,10 +52,10 @@
     </style>
 </head>
 <body>
-    <div id="middle">
+    <div class="highlightable" id="middle">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam iaculis justo quis ligula cursus, volutpat elementum nulla ullamcorper. Nulla venenatis volutpat feugiat. Cras non elit tempus, ultricies enim eget, volutpat eros. Morbi euismod dapibus quam, vel laoreet risus feugiat id. Vivamus gravida diam et orci tristique, et maximus lorem varius. Sed eleifend ligula id nunc hendrerit porttitor. Maecenas sed est ipsum. Vestibulum vestibulum accumsan imperdiet. Cras malesuada tristique eros, ut pretium neque lacinia et.
     </div>
-    <div id="other">
+    <div class="highlightable" id="other">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam iaculis justo quis ligula cursus, volutpat elementum nulla ullamcorper. Nulla venenatis volutpat feugiat. Cras non elit tempus, ultricies enim eget, volutpat eros. Morbi euismod dapibus quam, vel laoreet risus feugiat id. Vivamus gravida diam et orci tristique, et maximus lorem varius. Sed eleifend ligula id nunc hendrerit porttitor. Maecenas sed est ipsum. Vestibulum vestibulum accumsan imperdiet. Cras malesuada tristique eros, ut pretium neque lacinia et.
     </div>
 
@@ -79,7 +79,7 @@
     <script type="text/javascript">
 
 
-
+        var all = document.querySelectorAll('.highlightable');
         var middle = document.getElementById('middle');
         var other  = document.getElementById('other');
 
@@ -88,24 +88,26 @@
 
             var highlighter = window.highlighter = document.getElementById('highlighter');
 
-            highlighter.activate(middle);
+            highlighter.setTarget(middle);
 
             middle.addEventListener('click', function (e) {
 
                 e.stopPropagation();
 
-                highlighter.activate(middle);
+                highlighter.setTarget(middle);
             });
 
             other.addEventListener('click', function (e) {
 
                 e.stopPropagation();
 
-                highlighter.activate(other);
+                highlighter.setTarget(other);
             });
 
             document.body.addEventListener('click', function (e) {
-                highlighter.unHighlight();
+
+                console.log(all)
+                highlighter.setTarget(all);
             })
         });
 

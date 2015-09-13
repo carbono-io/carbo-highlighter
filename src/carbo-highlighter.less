@@ -1,4 +1,4 @@
-#wrapper {
+.highlighter {
     visibility: hidden;
     opacity: 0;
     position: fixed;
@@ -18,7 +18,7 @@
 
         visibility 0s 0.4s;
 
-    &.show {
+    &[state="active"] {
         visibility: visible;
         opacity: 1;
 
@@ -54,28 +54,30 @@
     }
 }
 
-#top {
+.top {
     top: 0;
     transform: translateY(-100%);
 }
 
-#bottom {
+.bottom {
     bottom: 0;
     transform: translateY(100%);
 }
 
-#left {
+.left {
     left: 0;
     transform: translateX(-100%);
 }
 
-#right {
+.right {
     right: 0;
     transform: translateX(100%);
 }
 
-#surface {
+.surface {
     box-sizing: border-box;
 
     background: transparent;
+
+    border: 3px red dashed;
 }

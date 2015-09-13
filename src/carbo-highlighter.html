@@ -6,25 +6,37 @@
 
     <template>
 
-        <div id="wrapper">
-            <div id="top" class="container x-axis">
-                <content select="[position='top']"></content>
+        <template is="dom-repeat" items="{{ _highlighters }}">
+
+            <div 
+                class="highlighter"
+                state$="{{ item.state }}"
+                style$="{{ item.wrapperStyle }}"
+            >
+                <div class="container top x-axis">
+                    <content select="[position='top']"></content>
+                </div>
+                <div class="container bottom x-axis">
+                    <content select="[position='bottom']"></content>
+                </div>
+                <div class="container left y-axis">
+                    <content select="[position='left']"></content>
+                </div>
+                <div class="container right y-axis">
+                    <content select="[position='right']"></content>
+                </div>
+                <div 
+                    class="container surface y-axis x-axis"
+                    style="{{ item.surfaceStyle }}"
+                >
+                    <content select="[position='center']"></content>
+                </div>
             </div>
-            <div id="bottom" class="container x-axis">
-                <content select="[position='bottom']"></content>
-            </div>
-            <div id="left" class="container y-axis">
-                <content select="[position='left']"></content>
-            </div>
-            <div id="right" class="container y-axis">
-                <content select="[position='right']"></content>
-            </div>
-            <div id="surface" class="container y-axis x-axis">
-                <content select="[position='center']"></content>
-            </div>
-        </div>
+
+        </template>
 
     </template>
 
+    <script src="../lodash/lodash.js"></script>
     <script src="carbo-highlighter.js"></script>
 </dom-module>
