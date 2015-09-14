@@ -11,7 +11,7 @@
 
     <style type="text/css">
         #middle {
-            position: fixed;
+            position: absolute;
 
             top: 50%;
             left: 50%;
@@ -28,6 +28,8 @@
             font-family: helvetica, sans-serif;
 
             border-radius: 50%;
+
+            z-index: 2;
         }
 
         #other {
@@ -49,6 +51,10 @@
             font-family: helvetica, sans-serif;
 
         }
+
+        #scroller {
+            height: 10000px;
+        }
     </style>
 </head>
 <body>
@@ -58,6 +64,8 @@
     <div id="other">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam iaculis justo quis ligula cursus, volutpat elementum nulla ullamcorper. Nulla venenatis volutpat feugiat. Cras non elit tempus, ultricies enim eget, volutpat eros. Morbi euismod dapibus quam, vel laoreet risus feugiat id. Vivamus gravida diam et orci tristique, et maximus lorem varius. Sed eleifend ligula id nunc hendrerit porttitor. Maecenas sed est ipsum. Vestibulum vestibulum accumsan imperdiet. Cras malesuada tristique eros, ut pretium neque lacinia et.
     </div>
+
+    <div id="scroller"></div>
 
     <carbo-highlighter id="highlighter">
 
@@ -88,25 +96,31 @@
 
             var highlighter = window.highlighter = document.getElementById('highlighter');
 
-            highlighter.activate(middle);
+            highlighter.set('target', middle);
 
-            middle.addEventListener('click', function (e) {
-
-                e.stopPropagation();
-
-                highlighter.activate(middle);
-            });
-
-            other.addEventListener('click', function (e) {
+            middle.addEventListener('mousemove', function (e) {
 
                 e.stopPropagation();
 
-                highlighter.activate(other);
+                highlighter.highlight(middle, {
+                    border: '3px navy dashed'
+                });
             });
 
-            document.body.addEventListener('click', function (e) {
-                highlighter.unHighlight();
-            })
+            other.addEventListener('mousemove', function (e) {
+
+                e.stopPropagation();
+
+                highlighter.highlight(other);
+
+                highlighter.set('surfaceStyle', {
+                    border: '3px red dashed'
+                });
+            });
+
+            // document.body.addEventListener('mousemove', function (e) {
+            //     highlighter.hide();
+            // })
         });
 
     </script>

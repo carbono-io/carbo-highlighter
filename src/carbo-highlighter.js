@@ -71,128 +71,104 @@
         is: 'carbo-highlighter',
 
         properties: {
-            element: {
+            target: {
                 type: Object,
                 notify: true,
-                observer: '_onElementChange',
+                observer: 'updatePosition',
             },
 
-            surfaceStyles: {
+            surfaceStyle: {
                 type: Object,
                 notify: true,
-                observer: '_onSurfaceStylesChange',
+                observer: '_updateSurfaceStyle',
+            },
+
+            state: {
+                type: String,
+                notify: true,
+                value: 'inactive'
             }
         },
 
         ready: function () {
 
-            if (this.element) {
-                this.activate(this.element, true);
+            window.addEventListener('scroll', this.updatePosition.bind(this));
+        },
+
+        updatePosition: function () {
+
+            if (this.target) {
+                // The wrapper DOMNode
+                var wrapper = this.$.wrapper;
+                // The bounding rectangle for the element to be hightlighted
+                var rect    = this.target.getBoundingClientRect();
+
+                // Set positions
+                wrapper.style.left   = rect.left   + 'px';
+                wrapper.style.top    = rect.top    + 'px';
+                wrapper.style.width  = rect.width  + 'px';
+                wrapper.style.height = rect.height + 'px';
+
+                this._updateSurfaceStyle();
             }
         },
 
         /**
-         * Highlights a given element
-         * @param  {DOMNode} element The node to be highlighted
+         * Surface style
          */
-        activate: function (element, force) {
-            if (!element) {
-                throw new Error('No element for activate(element)');
+        _updateSurfaceStyle: function () {
+
+            if (this.target) {
+                // There are some style that interfere drastically 
+                // on the positioning, such as border radius.
+                // We want to mimic those style from 
+                // the highlighted element to the wrapper
+                var computedStyle = DOMHelpers.getComputedStyle(this.target);
+
+                // get the surface element
+                var surface = this.$.surface;
+
+                //forEach - para cada um dos itens do array MIMIC_STYLES
+                MIMIC_STYLES.forEach(function (styleProp) {
+                    if (computedStyle[styleProp]) {
+                        // Simply copy the style
+                        surface.style[styleProp] = computedStyle[styleProp];
+                    }
+                });
+
+                // Set surfaceStyle
+                for (prop in this.surfaceStyle) {
+                    surface.style[prop] = this.surfaceStyle[prop];
+                }
             }
-
-            // If the new highlighted element is the same as the 
-            // currentActive one, just let it be.
-            if (this.element === element && !force) {
-                return; 
-            }
-
-            // If there is an element deactivate it
-            if (this.element) {
-                this.deactivate();
-            }
-
-            // Save the element to the active element
-            this.element = element;
-
-            // The wrapper DOMNode
-            var wrapper = this.$.wrapper;
-            // The bounding rectangle for the element to be hightlighted
-            var rect    = element.getBoundingClientRect();
-            
-            this.toggleClass('show', true, wrapper);
-
-            // Set positions
-            wrapper.style.left   = rect.left   + 'px';
-            wrapper.style.top    = rect.top    + 'px';
-            wrapper.style.width  = rect.width  + 'px';
-            wrapper.style.height = rect.height + 'px';
-
-            this._setSurfaceStyles();
         },
+
+        highlight: function (target, surfaceStyle) {
+            this.set('state', 'active');
+
+            this.set('target', target);
+
+            if (surfaceStyle) {
+                this.set('surfaceStyle', surfaceStyle);
+            }
+        },
+
         /**
          * Removes highlight.
          */
-        deactivate: function () {
+        hide: function () {
 
             var wrapper = this.$.wrapper;
 
-            this.toggleClass('show', false, wrapper);
+            this.set('state', 'inactive');
 
             // Unmimic styles
             MIMIC_STYLES.forEach(function (styleProp) {
                 delete wrapper.style[styleProp];
             });
 
-            delete this.element;
+            this.set('target', false);
         },
-
-
-        /**
-         * Surface styles
-         */
-        _setSurfaceStyles: function (styles) {
-            // There are some styles that interfere drastically 
-            // on the positioning, such as border radius.
-            // We want to mimic those styles from 
-            // the highlighted element to the wrapper
-            var computedStyle = DOMHelpers.getComputedStyle(this.element);
-
-            // get the surface element
-            var surface = this.$.surface;
-
-            //forEach - para cada um dos itens do array MIMIC_STYLES
-            MIMIC_STYLES.forEach(function (styleProp) {
-                if (computedStyle[styleProp]) {
-                    // Simply copy the styles
-                    surface.style[styleProp] = computedStyle[styleProp];
-                }
-            });
-
-            // Set border styles
-        },
-
-
-        /**
-         * Handles changes on the element
-         */
-        _onElementChange: function (newElement, oldElement) {
-            this.activate(newElement, true);
-        },
-
-        /**
-         * Handle changes on the border
-         */
-        _onSurfaceStylesChange: function () {
-            var surface = this.$.surface;
-
-            console.log('_onSurfaceStylesChange');
-
-            for (prop in this.surfaceStyles) {
-                surface.style[prop] = this.surfaceStyles[prop];
-            }
-
-            
-        }
 
     });
 
