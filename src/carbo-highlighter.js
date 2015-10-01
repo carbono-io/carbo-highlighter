@@ -143,18 +143,34 @@
             }
         },
 
+        /**
+         * Highlights a target element
+         * @param  {DOMElementNode} target target element to highlight
+         * @param  {Object} surfaceStyle   object with styles for the surface
+         */
         highlight: function (target, surfaceStyle) {
-            this.set('state', 'active');
 
             this.set('target', target);
 
+            this.show(surfaceStyle)
+        },
+
+        /**
+         * Shows the highlighter
+         * 
+         * @param  {Object} surfaceStyle object with styles for the surface
+         */
+        show: function (surfaceStyle) {
+
+            this.set('state', 'active');
+            
             if (surfaceStyle) {
                 this.set('surfaceStyle', surfaceStyle);
             }
         },
 
         /**
-         * Removes highlight.
+         * Hides highlight.
          */
         hide: function () {
 
